@@ -40,5 +40,5 @@ http.createServer(async(req,res)=>{
     catch(e){res.writeHead(500,{"content-type":"application/json"});res.end(JSON.stringify({error:e.message}));}
     return;
   }
-  fs.readFile(path.join(__dirname,"public","index.html"),(e,b)=>{res.writeHead(200,{"content-type":"text/html; charset=utf-8"});res.end(b);});
+  fs.readFile(path.join(__dirname,"index.html"),(e,b)=>{res.writeHead(200,{"content-type":"text/html; charset=utf-8"});res.end(b);});
 }).listen(process.env.PORT||3000);
