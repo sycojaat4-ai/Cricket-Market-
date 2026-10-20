@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cricket Market Load</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f3f6f4;--card:#ffffff;--ink:#14201b;--mute:#5d6b64;--line:#dbe3de;
+  --head:#e6efe9;--up:#0f8a4b;--down:#c5322d;--upbg:#d9f2e3;--downbg:#fbe0de;--chip:#e9eeeb;--warn:#fff3c4;--warnink:#5a4500;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0e1512;--card:#16201b;--ink:#e8f0eb;--mute:#8fa097;--line:#27352e;--head:#1d2b24;--up:#4ad08a;--down:#ff7a73;--upbg:#12361f;--downbg:#3b1b19;--chip:#223029;--warn:#3a3210;--warnink:#f2dc84}
+}
+:root[data-theme="dark"]{--bg:#0e1512;--card:#16201b;--ink:#e8f0eb;--mute:#8fa097;--line:#27352e;--head:#1d2b24;--up:#4ad08a;--down:#ff7a73;--upbg:#12361f;--downbg:#3b1b19;--chip:#223029;--warn:#3a3210;--warnink:#f2dc84}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow Semi Condensed",system-ui,sans-serif;font-size:16px;line-height:1.35}
+header{padding:16px 14px 6px;max-width:720px;margin:0 auto}
+h1{font-size:26px;font-weight:700;margin:0;letter-spacing:.2px}
+.sub{color:var(--mute);margin:2px 0 0;font-size:15px}
+.demo{margin:10px 14px 0;max-width:692px;background:var(--warn);color:var(--warnink);padding:8px 10px;border-radius:6px;font-size:14px}
+@media(min-width:720px){.demo{margin:10px auto 0}}
+main{max-width:720px;margin:0 auto;padding:10px 14px 28px;display:grid;gap:10px}
+.m{background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.mh{background:var(--head);padding:8px 10px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.comp{font-size:13px;color:var(--mute)}
+.name{font-weight:700;font-size:18px}
+.tot{font-size:13px;color:var(--mute);white-space:nowrap;font-variant-numeric:tabular-nums}
+.teams{display:grid;grid-template-columns:1fr 1fr}
+.t{padding:10px;border-top:1px solid var(--line);display:grid;gap:4px}
+.t+.t{border-left:1px solid var(--line)}
+.tn{font-weight:600;font-size:15px}
+.amt{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pct{background:var(--chip);border-radius:999px;padding:1px 9px;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.odds{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;padding:1px 7px;border-radius:5px}
+.up{color:var(--up);background:var(--upbg)}
+.down{color:var(--down);background:var(--downbg)}
+.flat{color:var(--mute);background:var(--chip)}
+.bar{height:5px;background:var(--down);opacity:.55}
+.bar i{display:block;height:100%;background:var(--up)}
+.b{font-size:12px;font-weight:700;padding:0 6px;border-radius:4px;margin-right:4px}.b.live{background:var(--down);color:#fff}.b.pre{background:var(--chip);color:var(--mute)}
+.toss{padding:8px 10px;border-top:1px solid var(--line);font-size:14px}.tl{color:var(--mute);font-size:13px;margin-bottom:4px}.tr{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}.toss.done{color:var(--mute)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);max-width:720px;margin:6px auto 0;padding:8px 14px;display:flex;gap:8px}
+.tabs button{flex:1;font:inherit;font-weight:600;font-size:17px;padding:9px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.tabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tabs button:focus-visible{outline:2px solid var(--up);outline-offset:2px}
+main[hidden]{display:none}
+footer{max-width:720px;margin:0 auto;padding:0 14px 24px;color:var(--mute);font-size:13px}
+@media(prefers-reduced-motion:no-preference){.odds{transition:background .4s,color .4s}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Market Load</h1>
+  <p class="sub">Kitna paisa kis team pe laga hai · updates every 4 seconds</p>
+</header>
+<div class="demo">Betfair Exchange data via OddsPapi. Load = paisa jo abhi back/lay ke liye available hai (matched amount nahi).</div>
+<nav class="tabs"><button id="t1" class="on" onclick="show(1)">Match Load</button><button id="t2" onclick="show(2)">Toss Load</button></nav>
+<main id="list"></main>
+<main id="tosslist" hidden></main>
+<footer>Total matched = match mein ab tak laga total paisa. % = us total ka kitna hissa is team pe laga. Odds ke saamne arrow = pichle update se badha ya ghata.</footer>
+<script>
+var M=[],prev={};
+function f(n){return Math.round(n).toLocaleString("en-US")+" GBP"}
+function dir(k,v){var p=prev[k];prev[k]=v;return p==null||Math.abs(v-p)<0.004?"flat":v>p?"up":"down"}
+function arrow(d,v){return v?(d==="up"?"▲ ":d==="down"?"▼ ":"")+v.toFixed(2):"-"}
+function pc(x,y){return x+y>0?Math.round(100*x/(x+y)):50}
+function tag(m){return '<span class="b '+(m.live?"live":"pre")+'">'+(m.live?"Live":"Upcoming")+'</span>'}
+function team(n,s,pct,d){return '<div class="t"><div class="tn">'+n+'</div><div class="amt">'+f(s.l)+'</div><div class="row"><span class="pct">'+pct+'%</span><span class="odds '+d+'">'+arrow(d,s.p)+'</span></div></div>'}
+function card(m){
+  var w=m.win;if(!w)return"";var pa=pc(w.a.l,w.b.l);
+  return '<section class="m"><div class="mh"><div><div class="comp">'+tag(m)+m.c+'</div><div class="name">'+m.a+' – '+m.b+'</div></div><div class="tot">Total '+f(w.a.l+w.b.l)+'</div></div><div class="teams">'+team(m.a,w.a,pa,m.da)+team(m.b,w.b,100-pa,m.db)+'</div><div class="bar"><i style="width:'+pa+'%"></i></div></section>';
+}
+function tossCard(m){
+  var body=m.live?'<div class="toss done">Match shuru ho chuka hai, toss market band.</div>':
+   '<div class="toss"><div class="tl">Toss load (toss tak khula)</div><div class="tr"><span>'+m.a+' <b>'+f(m.toss.a.l)+'</b> <span class="pct">'+pc(m.toss.a.l,m.toss.b.l)+'%</span></span><span>'+m.b+' <b>'+f(m.toss.b.l)+'</b> <span class="pct">'+(100-pc(m.toss.a.l,m.toss.b.l))+'%</span></span></div></div>';
+  return '<section class="m"><div class="mh"><div><div class="comp">'+tag(m)+m.c+'</div><div class="name">'+m.a+' – '+m.b+'</div></div></div>'+body+'</section>';
+}
+function render(){
+  document.getElementById("list").innerHTML=M.map(card).join("")||'<p class="sub">Abhi koi match nahi mila.</p>';
+  document.getElementById("tosslist").innerHTML=M.filter(function(m){return m.toss}).map(tossCard).join("")||'<p class="sub">Abhi kisi match ka toss market nahi mila.</p>';
+}
+function load(){
+  fetch("/api/data").then(function(r){return r.json()}).then(function(d){
+    if(d.error)throw new Error(d.error);
+    d.forEach(function(m){if(m.win){m.da=dir(m.id+"a",m.win.a.p);m.db=dir(m.id+"b",m.win.b.p)}});
+    M=d;render();
+  }).catch(function(e){document.getElementById("list").innerHTML='<p class="sub">Data nahi aaya: '+e.message+'</p>'});
+}
+function show(k){document.getElementById("list").hidden=k!==1;document.getElementById("tosslist").hidden=k!==2;document.getElementById("t1").className=k===1?"on":"";document.getElementById("t2").className=k===2?"on":""}
+load();setInterval(load,20000);
+</script>
+</body>
+</html>
